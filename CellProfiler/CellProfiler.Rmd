@@ -1,0 +1,64 @@
+---
+title: "ObjectIntensity"
+author: "Lin Tian"
+date: "4/6/2022"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+## Load Data
+
+```{r}
+library(ggplot2)
+library(RColorBrewer)
+setwd("~/Downloads/ObjectIntensity_Laminin_Lyve1")
+```
+
+## LvMet
+
+```{r}
+data.df <- read.csv("ObjectIntensity_Output/VEcad_Obj3.csv")
+data.df <- subset(data.df, ImageNumber==1)
+
+data.df$cellType <- NA
+data.df$cellType <- ifelse(data.df$Intensity_MeanIntensity_NormalVEcad != 0, "normal", ifelse(data.df$Intensity_MeanIntensity_TumorVEcad != 0, "core", "peri"))
+
+core_p1 <- ggplot() + stat_density_2d(geom = "polygon", contour = TRUE, data=subset(data.df, cellType=="core"), aes(x=Intensity_MeanIntensity_OrigGreen, y=Intensity_MeanIntensity_OrigRed, colour = after_stat(level)), fill=NA) + scale_colour_distiller(palette = "Greens", direction = 1) + geom_point(data=subset(data.df, cellType=="core"), aes(x=Intensity_MeanIntensity_OrigGreen, y=Intensity_MeanIntensity_OrigRed), colour="#005A32", alpha=0.2) + scale_x_continuous(breaks=seq(0, 0.4, 0.1), limits=c(0, 0.41)) + scale_y_continuous(breaks=seq(0, 0.6, 0.2), limits=c(0, 0.7)) + theme_bw() + theme(axis.title.x = element_blank(), panel.grid.major=element_blank(), panel.grid.minor=element_blank(), panel.border=element_blank(), axis.line.x=element_line(colour="black"), axis.line.y=element_line(colour="black")) + coord_fixed(ratio=0.72)
+ggsave("core_p1.pdf", core_p1, width=6.28, height=6.28, units="in", useDingbats=FALSE)
+
+core_p2 <- ggplot() + stat_density_2d(geom = "polygon", contour = TRUE, data=subset(data.df, cellType=="core"), aes(x=Intensity_MeanIntensity_OrigGreen, y=Intensity_MeanIntensity_OrigRed), colour="#005A32", bins=6, fill=NA) + geom_point(data=subset(data.df, cellType=="core"), aes(x=Intensity_MeanIntensity_OrigGreen, y=Intensity_MeanIntensity_OrigRed), colour="#005A32", alpha=0.2) + scale_x_continuous(breaks=seq(0, 0.4, 0.1), limits=c(0, 0.41)) + scale_y_continuous(breaks=seq(0, 0.6, 0.2), limits=c(0, 0.7)) + theme_bw() + theme(axis.title.x = element_blank(), panel.grid.major=element_blank(), panel.grid.minor=element_blank(), panel.border=element_blank(), axis.line.x=element_line(colour="black"), axis.line.y=element_line(colour="black")) + coord_fixed(ratio=0.72)
+ggsave("core_p2.pdf", core_p2, width=6.28, height=6.28, units="in", useDingbats=FALSE)
+
+peri_p1 <- ggplot() + stat_density_2d(geom = "polygon", contour = TRUE, data=subset(data.df, cellType=="peri"), aes(x=Intensity_MeanIntensity_OrigGreen, y=Intensity_MeanIntensity_OrigRed, colour = after_stat(level)), fill=NA, bins=6) + scale_colour_distiller(palette = "Blues", direction = 1) + geom_point(data=subset(data.df, cellType=="peri"), aes(x=Intensity_MeanIntensity_OrigGreen, y=Intensity_MeanIntensity_OrigRed), colour="#084594", alpha=0.2) + scale_x_continuous(breaks=seq(0, 0.4, 0.1), limits=c(0, 0.41)) + scale_y_continuous(breaks=seq(0, 0.6, 0.2), limits=c(0, 0.7)) + theme_bw() + theme(axis.title.x = element_blank(), panel.grid.major=element_blank(), panel.grid.minor=element_blank(), panel.border=element_blank(), axis.line.x=element_line(colour="black"), axis.line.y=element_line(colour="black")) + coord_fixed(ratio=0.72)
+ggsave("peri_p1.pdf", peri_p1, width=6.28, height=6.28, units="in", useDingbats=FALSE)
+
+peri_p2 <- ggplot() + stat_density_2d(geom = "polygon", contour = TRUE, data=subset(data.df, cellType=="peri"), aes(x=Intensity_MeanIntensity_OrigGreen, y=Intensity_MeanIntensity_OrigRed), fill=NA, bins=6, colour="#084594") + scale_colour_distiller(palette = "Blues", direction = 1) + geom_point(data=subset(data.df, cellType=="peri"), aes(x=Intensity_MeanIntensity_OrigGreen, y=Intensity_MeanIntensity_OrigRed), colour="#084594", alpha=0.2) + scale_x_continuous(breaks=seq(0, 0.4, 0.1), limits=c(0, 0.41)) + scale_y_continuous(breaks=seq(0, 0.6, 0.2), limits=c(0, 0.7)) + theme_bw() + theme(axis.title.x = element_blank(), panel.grid.major=element_blank(), panel.grid.minor=element_blank(), panel.border=element_blank(), axis.line.x=element_line(colour="black"), axis.line.y=element_line(colour="black")) + coord_fixed(ratio=0.72)
+ggsave("peri_p2.pdf", peri_p2, width=6.28, height=6.28, units="in", useDingbats=FALSE)
+
+normal_p1 <- ggplot() + stat_density_2d(geom = "polygon", contour = TRUE, data=subset(data.df, cellType=="normal"), aes(x=Intensity_MeanIntensity_OrigGreen, y=Intensity_MeanIntensity_OrigRed, colour = after_stat(level)), fill=NA) + scale_colour_distiller(palette = "Reds", direction = 1) + geom_point(data=subset(data.df, cellType=="normal"), aes(x=Intensity_MeanIntensity_OrigGreen, y=Intensity_MeanIntensity_OrigRed), colour="#99000D", alpha=0.2) + scale_x_continuous(breaks=seq(0, 0.4, 0.1), limits=c(0, 0.41)) + scale_y_continuous(breaks=seq(0, 0.6, 0.2), limits=c(0, 0.7)) + theme_bw() + theme(axis.title.x = element_blank(), panel.grid.major=element_blank(), panel.grid.minor=element_blank(), panel.border=element_blank(), axis.line.x=element_line(colour="black"), axis.line.y=element_line(colour="black")) + coord_fixed(ratio=0.72)
+ggsave("normal_p1.pdf", normal_p1, width=6.28, height=6.28, units="in", useDingbats=FALSE)
+
+normal_p2 <- ggplot() + stat_density_2d(geom = "polygon", contour = TRUE, data=subset(data.df, cellType=="normal"), aes(x=Intensity_MeanIntensity_OrigGreen, y=Intensity_MeanIntensity_OrigRed), colour="#99000D", bins=6, fill=NA) + geom_point(data=subset(data.df, cellType=="normal"), aes(x=Intensity_MeanIntensity_OrigGreen, y=Intensity_MeanIntensity_OrigRed), colour="#99000D", alpha=0.2) + scale_x_continuous(breaks=seq(0, 0.4, 0.1), limits=c(0, 0.41)) + scale_y_continuous(breaks=seq(0, 0.6, 0.2), limits=c(0, 0.7)) + theme_bw() + theme(axis.title.x = element_blank(), panel.grid.major=element_blank(), panel.grid.minor=element_blank(), panel.border=element_blank(), axis.line.x=element_line(colour="black"), axis.line.y=element_line(colour="black")) + coord_fixed(ratio=0.72)
+ggsave("normal_p2.pdf", normal_p2, width=6.28, height=6.28, units="in", useDingbats=FALSE)
+```
+
+## HCC
+
+```{r}
+data.df <- read.csv("ObjectIntensity_Output/VEcad_Obj3.csv")
+data.df <- subset(data.df, ImageNumber==2)
+
+data.df$cellType <- NA
+data.df$cellType <- ifelse(data.df$Intensity_MeanIntensity_NormalVEcad != 0, "normal", ifelse(data.df$Intensity_MeanIntensity_TumorVEcad != 0, "core", "peri"))
+
+core_p3 <- ggplot() + stat_density_2d(geom = "polygon", contour = TRUE, data=subset(data.df, cellType=="core"), aes(x=Intensity_MeanIntensity_OrigGreen, y=Intensity_MeanIntensity_OrigRed), colour="#005A32", bins=5, fill=NA) + geom_point(data=subset(data.df, cellType=="core"), aes(x=Intensity_MeanIntensity_OrigGreen, y=Intensity_MeanIntensity_OrigRed), colour="#005A32", alpha=0.2) + scale_x_continuous(breaks=seq(0, 0.4, 0.1), limits=c(0, 0.4)) + scale_y_continuous(breaks=seq(0, 0.4, 0.1), limits=c(0, 0.4)) + theme_bw() + theme(axis.title.x = element_blank(), panel.grid.major=element_blank(), panel.grid.minor=element_blank(), panel.border=element_blank(), axis.line.x=element_line(colour="black"), axis.line.y=element_line(colour="black")) + coord_fixed(ratio=1)
+ggsave("core_p3.pdf", core_p3, width=6.28, height=6.28, units="in", useDingbats=FALSE)
+
+peri_p3 <- ggplot() + stat_density_2d(geom = "polygon", contour = TRUE, data=subset(data.df, cellType=="peri"), aes(x=Intensity_MeanIntensity_OrigGreen, y=Intensity_MeanIntensity_OrigRed), fill=NA, bins=5, colour="#084594") + scale_colour_distiller(palette = "Blues", direction = 1) + geom_point(data=subset(data.df, cellType=="peri"), aes(x=Intensity_MeanIntensity_OrigGreen, y=Intensity_MeanIntensity_OrigRed), colour="#084594", alpha=0.2) + scale_x_continuous(breaks=seq(0, 0.4, 0.1), limits=c(0, 0.4)) + scale_y_continuous(breaks=seq(0, 0.4, 0.1), limits=c(0, 0.4)) + theme_bw() + theme(axis.title.x = element_blank(), panel.grid.major=element_blank(), panel.grid.minor=element_blank(), panel.border=element_blank(), axis.line.x=element_line(colour="black"), axis.line.y=element_line(colour="black")) + coord_fixed(ratio=1)
+ggsave("peri_p3.pdf", peri_p3, width=6.28, height=6.28, units="in", useDingbats=FALSE)
+
+normal_p3 <- ggplot() + stat_density_2d(geom = "polygon", contour = TRUE, data=subset(data.df, cellType=="normal"), aes(x=Intensity_MeanIntensity_OrigGreen, y=Intensity_MeanIntensity_OrigRed), colour="#99000D", bins=5, fill=NA) + geom_point(data=subset(data.df, cellType=="normal"), aes(x=Intensity_MeanIntensity_OrigGreen, y=Intensity_MeanIntensity_OrigRed), colour="#99000D", alpha=0.2) + scale_x_continuous(breaks=seq(0, 0.4, 0.1), limits=c(0, 0.4)) + scale_y_continuous(breaks=seq(0, 0.4, 0.1), limits=c(0, 0.4)) + theme_bw() + theme(axis.title.x = element_blank(), panel.grid.major=element_blank(), panel.grid.minor=element_blank(), panel.border=element_blank(), axis.line.x=element_line(colour="black"), axis.line.y=element_line(colour="black")) + coord_fixed(ratio=1)
+ggsave("normal_p3.pdf", normal_p3, width=6.28, height=6.28, units="in", useDingbats=FALSE)
+```
+
