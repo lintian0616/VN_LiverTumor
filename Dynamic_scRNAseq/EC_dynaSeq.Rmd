@@ -1,0 +1,121 @@
+---
+title: "EC_dynaSeq"
+author: "Lin Tian"
+date: "3/22/2025"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+## Load Data
+
+```{r}
+library(Seurat)
+setwd("~/EC_NK_dynaSeq")
+P22012402.total <- readRDS("~/EC_NK_dynaSeq/P22012402.total.rds")
+P22012402.total <- UpdateSeuratObject(object = P22012402.total)
+P22012402.new <- readRDS("~/EC_NK_dynaSeq/P22012402.new.rds")
+P22012402.new <- UpdateSeuratObject(object = P22012402.new)
+```
+
+## UMAP
+
+```{r}
+DimPlot(object=P22012402.total, reduction = "umap", group.by="group")
+DimPlot(object=P22012402.total, reduction = "umap", group.by="celltype")
+```
+
+
+## Differential Analysis
+
+```{r}
+Idents(P22012402.total) <- P22012402.total@meta.data$group
+diff.total <- FindMarkers(P22012402.total, ident.1 = "HCC")
+
+Idents(P22012402.new) <- P22012402.new@meta.data$group
+diff.new <- FindMarkers(P22012402.new, ident.1 = "HCC")
+```
+
+## Violin Plot
+
+```{r}
+# Sinusoidal
+VlnPlot(object=P22012402.total, feature=c("F8", "Clec4g", "Lyve1", "Stab1", "Stab2"), pt.size=0, y.max=7, cols=c("#0067aa", "#ff7f00"))
+VlnPlot(object=P22012402.new, feature=c("F8", "Clec4g", "Lyve1", "Stab1", "Stab2"), pt.size=0, y.max=7, cols=c("#0067aa", "#ff7f00"))
+wilcox.test(P22012402.total@assays$RNA$data["F8", ] ~ P22012402.total@meta.data$group)
+wilcox.test(P22012402.total@assays$RNA$data["Clec4g", ] ~ P22012402.total@meta.data$group)
+wilcox.test(P22012402.total@assays$RNA$data["Lyve1", ] ~ P22012402.total@meta.data$group)
+wilcox.test(P22012402.total@assays$RNA$data["Stab1", ] ~ P22012402.total@meta.data$group)
+wilcox.test(P22012402.total@assays$RNA$data["Stab2", ] ~ P22012402.total@meta.data$group)
+
+# Capillarized
+VlnPlot(object=P22012402.total, feature=c("Col15a1", "Col4a1", "Itga6", "Col4a2", "Sparc"), pt.size=0, y.max=7)
+VlnPlot(object=P22012402.new, feature=c("Col15a1", "Col4a1", "Itga6", "Col4a2", "Sparc"), pt.size=0, y.max=7)
+
+VlnPlot(object=P22012402.total, feature=c("Itga2", "Lamb1", "Lamc1", "Serpinh1", "Nid2"), pt.size=0, y.max=7)
+VlnPlot(object=P22012402.new, feature=c("Itga2", "Lamb1", "Lamc1", "Serpinh1", "Nid2"), pt.size=0, y.max=7)
+
+# Inflammation
+VlnPlot(object=P22012402.total, feature=c("Ly6c1", "Ccl2", "Ena78", "Fabp5", "Hmgb2"), pt.size=0, y.max=7)
+VlnPlot(object=P22012402.new, feature=c("Ly6c1", "Ccl2", "Fabp5", "Hmgb2"), pt.size=0, y.max=7)
+
+## Proliferation
+VlnPlot(object=P22012402.total, feature=c("Mki67", "Top2a", "Pcna", "Esm1", "Igfbp3", "Vegfa"), pt.size=0, y.max=7)
+VlnPlot(object=P22012402.new, feature=c("Mki67", "Top2a", "Pcna", "Esm1", "Igfbp3", "Vegfa"), pt.size=0, y.max=7)
+
+## F8
+plot1 <- VlnPlot(object=P22012402.total, feature="F8",pt.size=0, y.max=5)
+plot2 <- VlnPlot(object=P22012402.new, feature="F8",pt.size=0, y.max=5)
+```
+
+## Pathway analysis
+
+```{r}
+library(enrichR)
+dbs <- listEnrichrDbs()
+DEenrichRPlot(
+  P22012402.total,
+  ident.1 = "HCC",
+  balanced = TRUE,
+  logfc.threshold = 0.25,
+  assay = NULL,
+  test.use = "wilcox",
+  p.val.cutoff = 0.05,
+  cols = NULL,
+  max.genes=500,
+  enrich.database = "GO_Molecular_Function_2021",
+  num.pathway = 20,
+  return.gene.list = FALSE,
+)
+
+DEenrichRPlot(
+  P22012402.total,
+  ident.1 = "HCC",
+  balanced = TRUE,
+  logfc.threshold = 0.25,
+  assay = NULL,
+  test.use = "wilcox",
+  p.val.cutoff = 0.05,
+  cols = NULL,
+  max.genes=500,
+  enrich.database = "HMDB_Metabolites",
+  num.pathway = 20,
+  return.gene.list = FALSE,
+)
+
+DEenrichRPlot(
+  P22012402.new,
+  ident.1 = "HCC",
+  balanced = TRUE,
+  logfc.threshold = 0.25,
+  assay = NULL,
+  test.use = "wilcox",
+  p.val.cutoff = 0.05,
+  cols = NULL,
+  max.genes=500,
+  enrich.database = "HMDB_Metabolites",
+  num.pathway = 20,
+  return.gene.list = FALSE,
+)
+```
+
